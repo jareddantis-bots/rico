@@ -1,4 +1,4 @@
-# rico-bot
+# rico
 
 Rico is a ~~Discord bot~~ Discord-oriented application that allows you to send your friends notes, view notes your friends sent you, and keep conversations going for longer by unarchiving inactive threads automatically.
 
