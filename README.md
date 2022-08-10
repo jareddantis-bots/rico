@@ -42,8 +42,6 @@ Since its inception in the early COVID-19 pandemic, it has grown from a simple D
 
   **Note:** Due to limitations in Discord's API, some threads become invisible to Rico after an extended period of inactivity, and this he is unable to unarchive them for you. You will need to manually unarchive these threads once, after which Rico can take over.
 
-  *This is an optional feature.* See **[Configuration & deployment](#thread-manager-configuration-optional)** to learn how to enable this feature.
-
 ## Requirements
 
 You will need to install
