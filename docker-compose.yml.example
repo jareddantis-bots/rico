@@ -1,0 +1,67 @@
+version: '3.8'
+services:
+  database:
+    container_name: rico-db
+    image: postgres:alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=rico
+    user: postgres
+    volumes:
+      - rico-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD', 'pg_isready']
+      interval: 1s
+      timeout: 1s
+      retries: 3
+      start_period: 1s
+    restart: always
+  backend:
+    container_name: rico-backend
+    image: jareddantis/rico-backend:latest
+    depends_on:
+      database:
+        condition: service_healthy
+    volumes:
+      - ./backend.config.yml:/opt/app/config.yml
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:5000/health']
+      interval: 1s
+      timeout: 1s
+      retries: 3
+      start_period: 1s
+    restart: unless-stopped
+    ports:
+      - '3001:5000'
+  bot:
+    container_name: rico-bot
+    image: jareddantis/rico-bot:latest
+    depends_on:
+      backend:
+        condition: service_healthy
+    volumes:
+      - ./bot.config.yml:/opt/app/config.yml
+    restart: unless-stopped
+  frontend:
+    container_name: rico-frontend
+    image: jareddantis/rico-frontend:latest
+    environment:
+      # This is the publicly accessible URL for the backend service, which is only
+      # used for OAuth2 callback URLs (so that we can issue user sessions and save
+      # tokens directly to the database).
+      # Ideally nginx should be proxying this to the port specified above,
+      # which is 3001 in this example.
+      - NUXT_PUBLIC_API_BASE=https://rico.dantis.me/api/v1
+      # This is the private URL for the backend service, which the frontend server
+      # uses to communicate with the backend.
+      - NUXT_API_BASE=http://backend:5000/api/v1
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+networks:
+  default:
+    name: rico
+volumes:
+  rico-db:

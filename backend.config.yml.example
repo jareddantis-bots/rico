@@ -1,0 +1,28 @@
+app:
+  debug: false
+  admin:
+    # This should match the backend auth details in bot.config.yml
+    user: rico-bot
+    password: 'BASIC_AUTH_PASSWORD'
+
+ipc:
+  host: bot              # This should match the bot service name in docker-compose.yml
+  port: 27364            # No need to change this, must match ipc port in bot.config.yml
+  secret: 'IPC_SECRET'   # No need to change this, must match ipc secret in bot.config.yml
+
+frontend:
+  # This is the publicly accessible base URL of the frontend, used for login redirects
+  # Do not add a trailing slash, please
+  base_url: 'https://rico.dantis.me'
+
+discord:
+  # Get this from https://discord.com/developers/applications/
+  client_id: 'OAUTH2_CLIENT_ID'
+  client_secret: 'OAUTH2_CLIENT_SECRET'
+
+db:
+  host: database         # This should match the database service name in docker-compose.yml
+  port: 5432             # No need to change this
+  user: postgres         # This should match the POSTGRES_USER env variable in docker-compose.yml
+  password: postgres     # This should match the POSTGRES_PASSWORD env variable in docker-compose.yml
+  database: rico         # No need to change this

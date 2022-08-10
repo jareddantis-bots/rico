@@ -1,0 +1,24 @@
+bot:
+  debug:
+    enabled: false
+
+  # Get this from https://discord.com/developers/applications/
+  discord_token: 'BOT_TOKEN'
+
+  # Get this from https://developer.spotify.com/dashboard/
+  spotify:
+    client_id: 'SPOTIFY_CLIENT_ID'
+    client_secret: 'SPOTIFY_CLIENT_SECRET'
+
+ipc:
+  port: 27364            # No need to change this, must match ipc port in backend.config.yml
+  secret: 'IPC_SECRET'   # No need to change this, must match ipc secret in backend.config.yml
+
+backend:
+  host: backend         # This should match the backend service name in docker-compose.yml
+  port: 5000            # No need to change this
+  
+  # This should match the auth details in backend.config.yml
+  auth:
+    username: rico-bot
+    password: 'BASIC_AUTH_PASSWORD'
