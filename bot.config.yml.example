@@ -17,6 +17,7 @@ ipc:
 backend:
   host: backend         # This should match the backend service name in docker-compose.yml
   port: 5000            # No need to change this
+  prefix: '/v1'         # No need to change this
   
   # This should match the auth details in backend.config.yml
   auth:
