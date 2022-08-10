@@ -2,7 +2,7 @@
 
 Rico is a ~~Discord bot~~ Discord-oriented application that allows you to send your friends notes, view notes your friends sent you, and keep conversations going for longer by unarchiving inactive threads automatically.
 
-Since its inception in the early COVID-19 pandemic, it has grown from a simple Discord bot powered by Firebase into a containerized application made up of four parts:
+Since his inception in the early COVID-19 pandemic, he has grown from a simple Discord bot powered by Firebase into a containerized application made up of four parts:
 
 |Component|Description|Docker CI/CD|
 | ------- | --------- |:---------:|
@@ -40,7 +40,7 @@ Since its inception in the early COVID-19 pandemic, it has grown from a simple D
 
   Threads are extremely useful for managing lengthy discussions on topics that would have otherwise belonged in a separate full-blown text channel. Rico allows you to keep these threads alive for much longer, automatically unarchiving these threads indefinitely until you tell him to exclude them.
 
-  **Note:** Due to limitations in Discord's API, some threads become invisible to Rico after an extended period of inactivity, and this he is unable to unarchive them for you. You will need to manually unarchive these threads once, after which Rico can take over.
+  **Note:** Due to limitations in Discord's API, some threads become invisible to Rico after an extended period of inactivity, and thus he is unable to unarchive them for you. You will need to manually unarchive these threads once, after which Rico can take over.
 
 ## Requirements
 
@@ -144,7 +144,7 @@ Once the configurations are in place, open a terminal in the same directory as t
 docker compose up -d
 ```
 
-Omitt the `-d` if you want it to run in the foreground, either for debugging or for running Rico as a service.
+Omit the `-d` if you want it to run in the foreground, either for debugging or for running Rico as a service.
 
 Once the application is up and running, you should be able to access the dashboard at the domain you configured.
 
