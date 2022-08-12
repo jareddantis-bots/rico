@@ -2,18 +2,19 @@
 
 Rico is a ~~Discord bot~~ Discord-oriented application that allows you to send your friends notes, view notes your friends sent you, and keep conversations going for longer by unarchiving inactive threads automatically.
 
-Since his inception in the early COVID-19 pandemic, he has grown from a simple Discord bot powered by Firebase into a containerized application made up of four parts:
+Since his inception in the early COVID-19 pandemic, he has grown from a simple Discord bot powered by Firebase into a containerized application made up of five parts:
 
 |Component|Description|Docker CI/CD|
 | ------- | --------- |:---------:|
 |[rico-bot](https://github.com/jareddantis-bots/rico-bot)|A Discord bot for creating, listing, and deleting notes. Also supports automatic unarchiving of inactive threads.|[![Docker Image CI](https://github.com/jareddantis-bots/rico-bot/actions/workflows/build-and-push.yml/badge.svg)](https://github.com/jareddantis-bots/rico-bot/actions/workflows/build-and-push.yml) ![Docker Pulls](https://img.shields.io/docker/pulls/jareddantis/rico-bot)|
 |[rico-frontend](https://github.com/jareddantis-bots/rico-frontend)|A web interface for managing your notes, toggling the thread unarchiving functionality, and exporting compatible notes to Spotify.|[![Docker Image CI](https://github.com/jareddantis-bots/rico-frontend/actions/workflows/build-and-push.yml/badge.svg)](https://github.com/jareddantis-bots/rico-frontend/actions/workflows/build-and-push.yml) ![Docker Pulls](https://img.shields.io/docker/pulls/jareddantis/rico-frontend)|
 |[rico-backend](https://github.com/jareddantis-bots/rico-backend)|A web interface for managing notes, toggling the thread unarchiving functionality, and exporting compatible notes to Spotify.|[![Docker Image CI](https://github.com/jareddantis-bots/rico-backend/actions/workflows/build-and-push.yml/badge.svg)](https://github.com/jareddantis-bots/rico-backend/actions/workflows/build-and-push.yml) ![Docker Pulls](https://img.shields.io/docker/pulls/jareddantis/rico-backend)|
+|rico-proxy|Reverse proxy that takes care of exposing both frontend (`/`) and backend (`/api/v1`) under one domain for CORS.|powered by [`nginx:alpine`](https://hub.docker.com/_/nginx)|
 |rico-db|Database for Rico, where notes, basic note author information, basic server information, lists of threads excluded from auto-unarchiving, and Discord/Spotify OAuth2 tokens are stored.|powered by [`postgres:alpine`](https://hub.docker.com/_/postgres)|
 
 **Table of Contents**
 
-- [rico-bot](#rico-bot)
+- [rico](#rico)
   - [Features](#features)
   - [Requirements](#requirements)
     - [Installing Docker and Docker Compose v2+](#installing-docker-and-docker-compose-v2)
@@ -56,8 +57,8 @@ Additionally, you will need to procure
 If you are going to deploy the frontend as well, you will also need to prepare
 
 * a publicly-accessible domain that points to your server
-* a reverse proxy behind said domain (I use Nginx, personally)
-* an SSL certificate for said domain ([Let's Encrypt](https://letsencrypt.org) is free!)
+* a reverse proxy behind said domain (**strongly recommended** - I use Nginx, personally)
+* an SSL certificate for said domain (**strongly recommended** - [Let's Encrypt](https://letsencrypt.org) is free!)
 
 ### Installing Docker and Docker Compose v2+
 
@@ -83,23 +84,19 @@ Docker Compose version v2.6.1
 
 ### Application configuration
 
-Download the example `.yml` files from this repository into an empty folder on your system, and remove the `.example` suffixes from all of them.
+Download the `.example` files from this repository into an empty folder on your system, and remove the `.example` suffixes from all of them.
 
 Open them one by one and edit them according to the comments in the files.
 
 ### Reverse proxy configuration
 
-The Docker composition exposes the following ports:
+The Docker composition exposes the port `3000` for the dashboard, which you should put behind a reverse proxy so that you can do things like enforce SSL on your dashboard's domain.
 
-|Port|Description|
-|----|----------|
-|3000|The frontend. This is where users will go to manage their notes, etc.|
-|3001|The backend. The frontend doesn't call this using the publicly accessible URL, but this is instead used for callbacks from Discord's and Spotify's OAuth2 authorization flows.|
-
-The sample configuration below is for Nginx, but you should be able to use another reverse proxy as long as you proxy port 3000 to `yourdomain.com` and port 3001 to `yourdomain.com/api`.
+The sample configuration below is for Nginx, but you should be able to use another reverse proxy as long as you proxy port 3000 to `yourdomain.com`:
 
 ```
 server {
+    # Must match the server_name in nginx.conf
     server_name yourdomain.com;
     listen 443 ssl http2;
     listen [::]:443 ssl http2;
@@ -108,21 +105,6 @@ server {
 
     location / {
         proxy_pass http://127.0.0.1:3000;
-        proxy_set_header Host $host;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_http_version 1.1;
-        proxy_buffering off;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-        gzip off;
-    }
-
-    location = /api {
-        return 301 /api/;
-    }
-
-    location /api/ {
-        proxy_pass http://127.0.0.1:3001/; # Note the trailing slash!
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_http_version 1.1;
